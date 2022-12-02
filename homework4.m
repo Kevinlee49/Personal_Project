@@ -1,15 +1,29 @@
 function homework4
 
+% 1. Generate 1024-point white Gaussian random noise w, with zero mean and unit variance. 
 N = 1024;
 p = 20;
 
 w = randn(N,1);
 x = zeros(N,1);
+
+% 2. Generate the 1024-point signal x defined by the following equation
 for n=1:N,
     x(n) = cos(0.1*pi*n) + 0.2*cos(0.15*pi*n) + 0.2*w(n);
 end;
 
-%Estimate parameters
+% 3. Estimate the parameters of 20th order autoregressive (linear prediction) model by a direct inversion method.
+% ap ... a1
+% a = inv(zz)*zy;
+% a = flip(a);
+% a = [1; -a];
+% plot(a)
+% title('A direct inversion method')
+% pause;
+
+
+% 3. Estimate the parameters of 20th order autoregressive (linear
+% prediction) model by Burg-Anderson method (arburg).
 zz = zeros(p);
 zy = zeros(p,1);
 for n=p+1:N,
@@ -17,17 +31,16 @@ for n=p+1:N,
     zz = zz + z*z';
     zy = zy + z*x(n);
 end;
-% ap ... a1
-a = inv(zz)*zy;
-a = flip(a);
-a = [1; -a];
 
-%a = aryule(x,p);
+% a = aryule(x,p);
 a = arburg(x,p);
 a = a';
 plot(a);
+title('Burg-Anderson method(arburg)')
 pause;
 
+
+% 4. Compute the power spectral density using the estimated parameters and plot the spectrum.
 % For each frequency, power spectrum is calculated
 phi = zeros(p+1,1);
 S = zeros(N,1);
@@ -39,11 +52,15 @@ for n=1:N,
     S(n) = 1/abs(a'*phi)^2;
 end;
 plot(log(S));
+title('Spectrum by a Burg-Anderson method(arburg)')
 pause;
 
+
+% 5. Find the roots of the autoregressive polynomial and find the spectral peaks from the computed roots.  
 % Calculate roots of AR polynomial
 r = roots(a);
 plot(r,'x');
+title('autoregressive polynomial by Burg-Anderson method(arburg)')
 pause;
 
 % Find 2 pairs f dominant poles
